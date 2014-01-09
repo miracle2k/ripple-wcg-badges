@@ -1,4 +1,4 @@
 Flask==0.10.1
-gunicorn==0.18.0
+gunicorn==18.0
 redis==2.9.0
 requests==2.2.0
