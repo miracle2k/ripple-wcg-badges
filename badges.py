@@ -13,7 +13,6 @@ app.config['REDIS_URL'] = os.environ.get('REDISTOGO_URL') or 'redis://localhost/
 
 redis = StrictRedis.from_url(app.config['REDIS_URL'])
 VALIDATION_URL = 'https://wasipaid.com/receipt'
-VALIDATION_URL = 'http://localhost:8000/receipt'
 
 
 @app.route('/callback', methods=['POST'])
