@@ -132,5 +132,8 @@ u"""<?xml version="1.0" encoding="UTF-8"?>
 
 
 if __name__ == '__main__':
-    app.run()
+    import sys
+    host = sys.argv[1] if len(sys.argv) > 1 else None
+    port = int(sys.argv[2]) if len(sys.argv) > 2 else None
+    app.run(host, port)
 
