@@ -1,18 +1,22 @@
 import os
-from flask import Flask, render_template, Response
+import json
+import time
+from flask import Flask, render_template, Response, request
 import requests
 from redis import StrictRedis
 
 
 app = Flask(__name__)
 app.debug = True
-app.config['REDIS_URL'] = os.environ['REDISTOGO_URL'] or 'redis://localhost'
+app.config['REDIS_URL'] = os.environ.get('REDISTOGO_URL') or 'redis://localhost/5'
 
 
 redis = StrictRedis.from_url(app.config['REDIS_URL'])
+VALIDATION_URL = 'https://wasipaid.com/receipt'
+VALIDATION_URL = 'http://localhost:8000/receipt'
 
 
-@app.route('/callback')
+@app.route('/callback', methods=['POST'])
 def ripple_event():
     """This url will be called by wasipaid.com when a configured event occurs;
     in this case: when the WCG giveaway address makes a payment.
@@ -21,12 +25,12 @@ def ripple_event():
     # First, make sure this is a valid request by posting back to wasipaid.com
     # Be sure to post back the exact data received, before decoding the JSON
     # (which would likely reorder keys etc).
-    result = requests.post('https://wasipaid.com/receipt', data=request.data)
+    result = requests.post(VALIDATION_URL, data=request.data)
     if result.text != 'VALID':
-        # Apparently not; ignore it.
-        return
+        # Apparently not; ignore it. Should the real service have a bug, let it redeliver.
+        return 'not at all ok', 400
 
-    data = result.json['data']
+    data = json.loads(request.data)['data']
     # Ignore any non-XRP payments
     if data['currency'] == 'XRP':
         user = data['destination']
@@ -62,7 +66,7 @@ def badge(ripple):
         powered = False
     else:
         amount = data['amount']
-        powered = (time.time() - float(data['when'])) < 2600*24
+        powered = (time.time() - float(data['when'])) < 3600*24
 
     badge = make_svg_badge(amount, powered)
     return Response(badge, content_type='image/svg+xml')
