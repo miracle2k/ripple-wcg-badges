@@ -7,7 +7,7 @@ from redis import StrictRedis
 
 
 app = Flask(__name__)
-app.debug = True
+app.debug = os.environ.get('DEBUG') == '1'
 app.config['REDIS_URL'] = os.environ.get('REDISTOGO_URL') or 'redis://localhost/5'
 
 
