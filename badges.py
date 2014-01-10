@@ -98,24 +98,36 @@ u"""<?xml version="1.0" encoding="UTF-8"?>
 </g>
 <g id="Right">
     <rect id="RightBG" x="76" y="1" fill="#FFFFFF" stroke="#557FC0" stroke-width="2" stroke-miterlimit="10" width="150" height="46"/>
-    <text  id="Amount" textLength="135" x="218" y="32" width="50" height="46"  text-anchor="end" fill="#557FC0" stroke="#557FC0"  stroke-width="2" font-family="'Segoe UI', 'Bitstream Vera Sans', 'DejaVu Sans', 'Bitstream Vera Sans', 'Trebuchet MS', Verdana, 'Verdana Ref', sans-serif" font-size="25">{text}</text>
+    <text id="Amount" {non_ie} y="32" width="50" height="46" fill="#557FC0" stroke="#557FC0"  stroke-width="2" font-family="'Segoe UI', 'Bitstream Vera Sans', 'DejaVu Sans', 'Bitstream Vera Sans', 'Trebuchet MS', Verdana, 'Verdana Ref', sans-serif" font-size="25">{text}</text>
 </g>
 </g>
 </svg>
 """
-    text = u'{} XRP'.format(xrp_count)
+    ie_compat = 'MSIE' in request.headers.get('User-Agent')
+
+    text = u'{:.0f} XRP'.format(float(xrp_count))
+    if ie_compat:
+        # IE does not support the textLength attribute for stretching a
+        # text when combined with text-anchor="end".
+        non_ie_code = 'textLength="135" x="85" text-anchor="start"'
+        pads = 0
+    else:
+        non_ie_code = 'textLength="135" x="218" text-anchor="end"'
+
+    # If the text is long, we let SVG stretch it. That looks bad if its too short, so pad
+    # with a space that will not be removed.
     if len(text) < 7:
         pads = 2
     elif len(text) < 1:
         pads = 1
     else:
         pads = 0
-    # If the text is long, we let SVG stretch it. That looks bad if its too short, so pad
-    # with a space that will not be removed.
+
     text = u'\u3000'*pads  + text
     badge = badge_template.format(
         text=text,
-        filter='url(#grayscale)' if not powered else '')
+        filter='url(#grayscale)' if not powered else '',
+        non_ie=non_ie_code)
     return badge
 
 
