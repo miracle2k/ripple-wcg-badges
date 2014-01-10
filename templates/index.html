@@ -128,11 +128,7 @@ body {
         <p class="lead">If it's gray, you have not receied a payment in the last 24 hours. If you see shining Ripple blue, you're good.</p>
         <p>
             Here is some BB-Code to use in your forum signature:
-            <textarea readonly style="width: 400px; height: 100px; font-size: 0.8em; resize: no">{{
-
-            "[url=http://wcgbadges.wasipaid.com][img=http://wcgbadges.wasipaid.com/sdfsdfsdfsdfsdfsdfsdfsdf][/url]"
-
-            }}</textarea>
+            <textarea readonly style="width: 400px; height: 100px; font-size: 0.8em; resize: no"></textarea>
         </p>
         </div>
       </div>
@@ -172,6 +168,7 @@ body {
                     address = 'sample';
                 $('#badge').attr('src', 'http://{{ request.host }}/' + address);
                 $('#info').slideDown();
+                $('textarea').val('[url=http://wcgbadges.wasipaid.com][img]http://wcgbadges.wasipaid.com/' + address + '[/img][/url]')
             }
 
             $('#address').on('change', updateBadge);
